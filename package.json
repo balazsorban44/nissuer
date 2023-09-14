@@ -1,0 +1,31 @@
+{
+  "name": "issuer",
+  "private": true,
+  "version": "0.0.0",
+  "description": "A GitHub Action for tried and tired maintainers.",
+  "type": "module",
+  "exports": "./index.js",
+  "scripts": {
+    "build": "ncc build index.js -m -o dist"
+  },
+  "keywords": [
+    "action",
+    "autoclose",
+    "github",
+    "issues",
+    "maintain",
+    "open source",
+    "oss",
+    "verify"
+  ],
+  "author": "Balázs Orbán <info@balazsorban.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@actions/core": "^1.10.1",
+    "@actions/github": "^5.1.1",
+    "@vercel/ncc": "^0.38.0"
+  },
+  "prettier": {
+    "semi": false
+  }
+}
