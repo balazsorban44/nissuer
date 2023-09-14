@@ -8,7 +8,7 @@ branding:
 inputs:
   reproducition-comment:
     description: 'Either a string or a path to a .md file inside the repository. Example: ".github/invalid-reproduction.md"'
-    required: true
+    default: '.github/invalid-reproduction.md'
   reproduction-hosts:
     description: 'Comma-separated list of hostnames that are allowed for reproductions. Example: "github.com,codesandbox.io"'
     default: github.com

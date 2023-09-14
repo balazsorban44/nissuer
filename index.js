@@ -7,7 +7,8 @@ import { join } from "node:path"
 
 const config = {
   invalidLink: {
-    comment: getInput("reproduction-comment"),
+    comment:
+      getInput("reproduction-comment") ?? ".github/invalid-reproduction.md",
     hosts: (getInput("reproduction-hosts") ?? "github.com")
       .split(",")
       .map((h) => h.trim()),
