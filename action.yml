@@ -25,5 +25,5 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Run action
-      uses: node20
-      run: dist/index.js
+      run: node ${{ github.action_path }}/dist/index.js
+      shell: sh
