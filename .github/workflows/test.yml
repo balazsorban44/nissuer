@@ -4,12 +4,6 @@ on:
   issues:
     types: [opened]
 
-permissions:
-  issues: write
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   test:
     runs-on: ubuntu-latest
