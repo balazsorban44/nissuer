@@ -19,6 +19,8 @@ const config = {
   },
 }
 
+debug(`Config: ${JSON.stringify(config, null, 2)}`)
+
 async function run() {
   if (!process.env.GITHUB_TOKEN) throw new TypeError("No GITHUB_TOKEN provided")
   if (!process.env.GITHUB_WORKSPACE)
@@ -77,7 +79,12 @@ run().catch(setFailed)
 async function isValidReproduction(body) {
   const linkSectionRe = new RegExp(config.invalidLink.linkSection, "is")
   const link = body.match(linkSectionRe)?.[1]?.trim()
-  if (!link) return info("Missing link")
+  if (!link) {
+    info("Missing link")
+    debug(`Link section regex: ${linkSectionRe}`)
+    debug(`Link section: ${body}`)
+    return
+  }
 
   if (!URL.canParse(link)) return info(`Invalid URL: ${link}`)
 
