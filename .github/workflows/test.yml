@@ -16,3 +16,5 @@ jobs:
     steps:
       - name: Nissuer
         uses: balazsorban44/nissuer@0.0.10
+        with:
+          reproduction-invalid-label: "reproduction-invalid"
