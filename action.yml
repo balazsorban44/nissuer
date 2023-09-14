@@ -13,8 +13,8 @@ inputs:
     description: 'Comma-separated list of hostnames that are allowed for reproductions. Example: "github.com,codesandbox.io"'
     default: github.com
   reproduction-invalid-label:
-    description: Label to apply to issues without a valid reproduction. Example "invalid reproduction"
-    default: invalid reproduction
+    description: 'Label to apply to issues without a valid reproduction. Example: "invalid-reproduction"'
+    default: 'invalid-reproduction'
   reproduction-link-section:
     description: 'A regular expression string with "(.*)" matching a valid URL in the issue body. The result is trimmed. Example: "### Link to reproducition(.*)### To reproduce"'
     default: '### Link to reproducition(.*)### To reproduce'

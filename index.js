@@ -12,7 +12,7 @@ const config = {
     hosts: (getInput("reproduction-hosts") ?? "github.com")
       .split(",")
       .map((h) => h.trim()),
-    label: getInput("reproduction-invalid-label") ?? "invalid reproduction",
+    label: getInput("reproduction-invalid-label") ?? "invalid-reproduction",
     linkSection:
       getInput("reproduction-link-section") ??
       "### Link to reproduction(.*)### To reproduce",
