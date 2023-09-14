@@ -4,9 +4,6 @@ on:
   issues:
     types: [opened]
 
-permissions:
-  issues: write
-
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -15,4 +12,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Nissuer
-        uses: balazsorban44/nissuer@0.0.8
+        uses: balazsorban44/nissuer@0.0.9
