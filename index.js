@@ -8,11 +8,13 @@ import { join } from "node:path"
 const config = {
   invalidLink: {
     comment: getInput("reproduction-comment"),
-    hosts: getInput("reproduction-hosts")
+    hosts: (getInput("reproduction-hosts") ?? "github.com")
       .split(",")
       .map((h) => h.trim()),
-    label: getInput("reproduction-invalid-label"),
-    linkSection: getInput("reproduction-link-section"),
+    label: getInput("reproduction-invalid-label") ?? "invalid reproduction",
+    linkSection:
+      getInput("reproduction-link-section") ??
+      "### Link to reproduction(.*)### To reproduce",
   },
 }
 
@@ -73,7 +75,7 @@ run().catch(setFailed)
  */
 async function isValidReproduction(body) {
   const linkSectionRe = new RegExp(config.invalidLink.linkSection, "is")
-  const link = body.match(linkSectionRe)?.[1].trim()
+  const link = body.match(linkSectionRe)?.[1]?.trim()
   if (!link) return info("Missing link")
 
   if (!URL.canParse(link)) return info(`Invalid URL: ${link}`)

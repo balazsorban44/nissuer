@@ -12,6 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Nissuer
-        uses: balazsorban44/nissuer@0.0.6
+        uses: balazsorban44/nissuer@0.0.7
         with:
           reproducition-comment: ".github/invalid-reproduction.md"
