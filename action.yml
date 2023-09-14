@@ -6,7 +6,7 @@ branding:
   color: orange
 
 inputs:
-  reproducition-comment:
+  reproduction-comment:
     description: 'Either a string or a path to a .md file inside the repository. Example: ".github/invalid-reproduction.md"'
     default: '.github/invalid-reproduction.md'
   reproduction-hosts:
@@ -16,8 +16,8 @@ inputs:
     description: 'Label to apply to issues without a valid reproduction. Example: "invalid-reproduction"'
     default: 'invalid-reproduction'
   reproduction-link-section:
-    description: 'A regular expression string with "(.*)" matching a valid URL in the issue body. The result is trimmed. Example: "### Link to reproducition(.*)### To reproduce"'
-    default: '### Link to reproducition(.*)### To reproduce'
+    description: 'A regular expression string with "(.*)" matching a valid URL in the issue body. The result is trimmed. Example: "### Link to reproduction(.*)### To reproduce"'
+    default: '### Link to reproduction(.*)### To reproduce'
 
 runs:
   using: "composite"
