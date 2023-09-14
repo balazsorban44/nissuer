@@ -25,5 +25,5 @@ runs:
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Run action
-      shell: sh
-      run: node dist/index.js
+      uses: node20
+      run: dist/index.js
