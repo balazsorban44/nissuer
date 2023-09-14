@@ -1,0 +1,17 @@
+name: Nissuer test
+
+on:
+  issues:
+    types: [opened]
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Nissuer
+        uses: balazsorban44/nissuer@0.0.0
+        with:
+          reproducition-comment: ".github/invalid-reproduction.md"
