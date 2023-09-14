@@ -1,5 +1,5 @@
-name: 'Issuer'
-description: 'GitHub Action that helps you maintain your issues'
+name: 'Nissuer'
+description: 'A GitHub Action for tried and tired maintainers.'
 author: 'Balázs Orbán'
 
 inputs:
