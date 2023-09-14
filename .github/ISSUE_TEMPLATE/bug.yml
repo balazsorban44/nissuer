@@ -4,7 +4,7 @@ labels: ['bug']
 body:
   - type: input
     attributes:
-      label: Link to reproducition
+      label: Link to reproduction
       description: |
         A link to a **public** GitHub repository.
         **Skipping this/providing an invalid link will result in the issue being closed**
@@ -13,7 +13,7 @@ body:
       required: true
   - type: textarea
     attributes:
-      label: To Reproduce
+      label: To reproduce
       description: A step-by-step description of how to reproduce the issue, based on the linked reproduction.
       placeholder: |
         1. Start the application in development (next dev)
