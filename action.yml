@@ -23,7 +23,7 @@ runs:
   using: "composite"
   steps:
     - name: Checkout code
-      uses: actions/checkout@4
+      uses: actions/checkout@v4
     - name: Run action
       shell: sh
       run: node dist/index.js
