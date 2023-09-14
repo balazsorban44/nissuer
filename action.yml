@@ -1,6 +1,9 @@
 name: 'Nissuer'
 description: 'A GitHub Action for tried and tired maintainers.'
 author: 'Balázs Orbán'
+branding:
+  icon: check-square
+  color: orange
 
 inputs:
   reproducition-comment:
