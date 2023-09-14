@@ -4,7 +4,7 @@ labels: ['bug']
 body:
   - type: input
     attributes:
-      label: Link to reproducition
+      label: Link to reproduction
       description: |
         A link to a **public** GitHub repository.
         **Skipping this/providing an invalid link will result in the issue being closed**
