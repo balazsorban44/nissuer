@@ -8,11 +8,13 @@ import { join } from "node:path"
 const config = {
   invalidLink: {
     comment: getInput("reproduction-comment"),
-    hosts: getInput("reproduction-hosts")
+    hosts: (getInput("reproduction-hosts") ?? "github.com")
       .split(",")
       .map((h) => h.trim()),
-    label: getInput("reproduction-invalid-label"),
-    linkSection: getInput("reproduction-link-section"),
+    label: getInput("reproduction-invalid-label") ?? "invalid reproduction",
+    linkSection:
+      getInput("reproduction-link-section") ??
+      "### Link to reproducition(.*)### To reproduce",
   },
 }
 
