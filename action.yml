@@ -20,7 +20,6 @@ inputs:
     default: '### Link to reproduction(.*)### To reproduce'
   label-comments:
     description: 'Autocomment on issues based on the added label. It should be a JSON object, where the key is a label, and the value is a file path or a comment text. Example: {"invalid": ".github/invalid-reproduction.md"}'
-    default: '{}'
 
 runs:
   using: "composite"
