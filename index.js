@@ -132,27 +132,31 @@ async function commentOnLabel() {
 
   if (action !== "labeled" || !issue) return
 
-  const commentableLabels = Object.keys(config.labelComments)
-  if (!commentableLabels.length) return
+  const labelsToComment = Object.keys(config.labelComments)
+  if (!labelsToComment.length) return
 
   /** @type {string[]} */
   const labels = issue.labels.map((l) => l.name)
   const newLabel = context.payload.label.name
 
   if (
-    !commentableLabels.includes(newLabel) &&
-    !labels.some((l) => commentableLabels.includes(l))
+    !labelsToComment.includes(newLabel) &&
+    !labels.some((l) => labelsToComment.includes(l))
   )
     return info("Not manually or already labeled.")
+
+  info(
+    `Label "${newLabel}" added to issue #${issue.number}, which will trigger adding a comment`
+  )
 
   const { rest: client } = getOctokit(config.token)
 
   const file = config.labelComments[newLabel]
-  const body = await readFile(join(config.workspace, file), "utf8")
+  const comment = join(config.workspace, file)
   await client.issues.createComment({
     ...context.repo,
     issue_number: issue.number,
-    body,
+    body: await getCommentBody(comment),
   })
 
   info(`Commented on issue #${issue.number} with ${file}`)
