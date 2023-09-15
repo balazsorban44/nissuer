@@ -7,12 +7,11 @@ This action is meant to help maintainers of open source projects by automating s
 ## Features
 
 - Autoclose/comment/label/lock issues that do not have a valid reproduction URL
-- Autocomment on issues based on labels added by a maintainer (TODO)
+- Autocomment on issues based on labels added by a maintainer
 - Hide +1, same issue, etc. comments on issues (TODO)
 - Autolabel issues based on user selection (TODO)
 
 ## Usage
-
 
 Add a workflow (eg. `.github/workflows/nissuer.yml`):
 
@@ -35,6 +34,8 @@ jobs:
     steps:
       - name: Nissuer
         uses: balazsorban44/nissuer@1.0.0
+        with:
+          label-comments: '{"invalid": ".github/invalid-reproduction.md"}'
 ```
 
 Add a comment file (by default we look for `.github/invalid-reproduction.md`):

@@ -5,6 +5,17 @@ import { context, getOctokit } from "@actions/github"
 import { readFile, access } from "node:fs/promises"
 import { join } from "node:path"
 
+if (!process.env.GITHUB_TOKEN) throw new TypeError("No GITHUB_TOKEN provided")
+if (!process.env.GITHUB_WORKSPACE) throw new TypeError("Not a GitHub workspace")
+
+function tryParse(json) {
+  try {
+    return JSON.parse(json)
+  } catch (e) {
+    setFailed(`Could not parse JSON: ${e.message}`)
+  }
+}
+
 const config = {
   invalidLink: {
     comment:
@@ -17,29 +28,28 @@ const config = {
       getInput("reproduction-link-section") ||
       "### Link to reproduction(.*)### To reproduce",
   },
+  labelComments: tryParse(getInput("label-comments") || "{}"),
+  token: process.env.GITHUB_TOKEN,
+  workspace: process.env.GITHUB_WORKSPACE,
 }
 
 debug(`Config: ${JSON.stringify(config, null, 2)}`)
 
-async function run() {
-  if (!process.env.GITHUB_TOKEN) throw new TypeError("No GITHUB_TOKEN provided")
-  if (!process.env.GITHUB_WORKSPACE)
-    throw new TypeError("Not a GitHub workspace")
-  const { issue } = context.payload
+run().catch(setFailed)
 
-  if (!issue?.body) {
-    info("Could not get issue body, exiting")
-    process.exit(0)
-  }
+async function checkValidReproduction() {
+  const { issue, action } = context.payload
 
-  if (await isValidReproduction(issue.body)) {
-    info(`Issue #${issue.number} contains a valid reproduction 💚`)
-    process.exit(0)
-  }
+  if (action !== "opened") return
+
+  if (!issue?.body) return info("Could not get issue body, exiting")
+
+  if (await isValidReproduction(issue.body))
+    return info(`Issue #${issue.number} contains a valid reproduction 💚`)
 
   info(`Invalid reproduction, issue will be closed/labeled/commented/locked...`)
 
-  const { rest: client } = getOctokit(process.env.GITHUB_TOKEN)
+  const { rest: client } = getOctokit(config.token)
   const common = { ...context.repo, issue_number: issue.number }
 
   // Close
@@ -54,7 +64,7 @@ async function run() {
   debug(`Issue #${issue.number} labeled`)
 
   // Comment with an explanation
-  const comment = join(process.env.GITHUB_WORKSPACE, config.invalidLink.comment)
+  const comment = join(config.workspace, config.invalidLink.comment)
   await client.issues.createComment({
     ...common,
     body: await getCommentBody(comment),
@@ -69,8 +79,6 @@ async function run() {
     `Issue #${issue.number} closed/labaled/commented/locked. It does not contain a valid reproduction 😢`
   )
 }
-
-run().catch(setFailed)
 
 /**
  * Determine if an issue contains a valid/accessible link to a reproduction
@@ -117,4 +125,40 @@ async function getCommentBody(pathOrComment) {
     if (error.code === "ENOENT") return pathOrComment
     throw error
   }
+}
+
+async function commentOnLabel() {
+  const { issue, action } = context.payload
+
+  if (action !== "labeled" || !issue) return
+
+  const commentableLabels = Object.keys(config.labelComments)
+  if (!commentableLabels.length) return
+
+  /** @type {string[]} */
+  const labels = issue.labels.map((l) => l.name)
+  const newLabel = context.payload.label.name
+
+  if (
+    !commentableLabels.includes(newLabel) &&
+    !labels.some((l) => commentableLabels.includes(l))
+  )
+    return info("Not manually or already labeled.")
+
+  const { rest: client } = getOctokit(config.token)
+
+  const file = config.labelComments[newLabel]
+  const body = await readFile(join(config.workspace, file), "utf8")
+  await client.issues.createComment({
+    ...context.repo,
+    issue_number: issue.number,
+    body,
+  })
+
+  info(`Commented on issue #${issue.number} with ${file}`)
+}
+
+async function run() {
+  await checkValidReproduction()
+  await commentOnLabel()
 }
