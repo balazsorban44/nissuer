@@ -30,7 +30,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  test:
+  issue-validator:
     runs-on: ubuntu-latest
     steps:
       - name: Nissuer
