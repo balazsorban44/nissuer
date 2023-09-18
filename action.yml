@@ -35,3 +35,12 @@ runs:
     - name: Run action
       run: node ${{ github.action_path }}/dist/index.js
       shell: sh
+      # https://github.com/actions/runner/issues/665#issuecomment-676581170
+      env:
+        "INPUT_REPRODUCTION_COMMENT": ${{inputs.reproduction-comment}}
+        "INPUT_REPRODUCTION_HOSTS": ${{inputs.reproduction-hosts}}
+        "INPUT_REPRODUCTION_INVALID_LABEL": ${{inputs.reproduction-invalid-label}}
+        "INPUT_REPRODUCTION_LINK_SECTION": ${{inputs.reproduction-link-section}}
+        "INPUT_LABEL_COMMENTS": ${{inputs.label-comments}}
+        "INPUT_LABEL_AREA_PREFIX": ${{inputs.label-area-prefix}}
+        "INPUT_LABEL_AREA_SECTION": ${{inputs.label-area-section}}
