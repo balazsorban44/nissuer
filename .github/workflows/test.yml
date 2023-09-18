@@ -17,6 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Nissuer
-        uses: balazsorban44/nissuer@1.3.0
+        uses: balazsorban44/nissuer@1.3.1
         with:
-          label-area-section: "Which area(s) are affected?(.*)"
+          label-area-section: "Which area\\(s\\) are affected\\?(.*)"

@@ -45,9 +45,7 @@ debug(`Config: ${JSON.stringify(config, null, 2)}`)
 async function checkValidReproduction() {
   const { issue, action } = context.payload
 
-  if (action !== "opened") return
-
-  if (!issue?.body) return info("Could not get issue body, exiting")
+  if (action !== "opened" || !issue?.body) return
 
   if (await isValidReproduction(issue.body))
     return info(`Issue #${issue.number} contains a valid reproduction 💚`)
@@ -227,13 +225,12 @@ async function hideUnhelpfulComments() {
 
 /* This action will automatically add labels to issues based on the area(s) of Next.js that are affected. */
 async function autolabelArea() {
-  if (!config.labels.areaSection)
-    return info("No area section defined, exiting")
-  const { issue } = context.payload
-  if (!issue) return info("Not an issue, exiting")
+  const { action, issue } = context.payload
+  if (action !== "opened" || !issue?.body) return
+
+  if (!config.labels.areaSection) return debug("No area section defined")
 
   const { body, number: issue_number } = issue
-  if (!body) return info("Could not get issue body, exiting")
 
   const { rest: client } = getOctokit(config.token)
 
