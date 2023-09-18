@@ -28,14 +28,17 @@ const config = {
       getInput("reproduction-link-section") ||
       "### Link to reproduction(.*)### To reproduce",
   },
-  labelComments: tryParse(getInput("label-comments") || "{}"),
+  labels: {
+    comments: tryParse(
+      getInput("label-comments") ||
+        '{"invalid reproduction": ".github/invalid-reproduction.md"}'
+    ),
+  },
   token: process.env.GITHUB_TOKEN,
   workspace: process.env.GITHUB_WORKSPACE,
 }
 
 debug(`Config: ${JSON.stringify(config, null, 2)}`)
-
-run().catch(setFailed)
 
 async function checkValidReproduction() {
   const { issue, action } = context.payload
@@ -132,8 +135,8 @@ async function commentOnLabel() {
 
   if (action !== "labeled" || !issue) return
 
-  const labelsToComment = Object.keys(config.labelComments)
-  if (!labelsToComment.length) return
+  const labelsToComment = Object.keys(config.labels.comments)
+  if (!labelsToComment.length) return debug("No labels to comment on")
 
   /** @type {string[]} */
   const labels = issue.labels.map((l) => l.name)
@@ -143,7 +146,7 @@ async function commentOnLabel() {
     !labelsToComment.includes(newLabel) &&
     !labels.some((l) => labelsToComment.includes(l))
   )
-    return info("Not manually or already labeled.")
+    return info("Not manually or already labeled")
 
   info(
     `Label "${newLabel}" added to issue #${issue.number}, which will trigger adding a comment`
@@ -151,7 +154,7 @@ async function commentOnLabel() {
 
   const { rest: client } = getOctokit(config.token)
 
-  const file = config.labelComments[newLabel]
+  const file = config.labels.comments[newLabel]
   const comment = join(config.workspace, file)
   await client.issues.createComment({
     ...context.repo,
@@ -162,7 +165,68 @@ async function commentOnLabel() {
   info(`Commented on issue #${issue.number} with ${file}`)
 }
 
+const stillRe = /(still\s(same|happen(ing|s))|same\son)/gi
+const linkRe = /https?:\/\/[^\s/$.?#].[^\s]*/g
+function isStillHappeningWithoutLink(text) {
+  return stillRe.test(text) && !linkRe.test(text)
+}
+
+/**
+MIT License
+
+Copyright (c) Sindre Sorhus sindresorhus@gmail.com (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+// Borrowed from Refined GitHub:
+// https://github.com/refined-github/refined-github/blob/c864a20b57bb433aaf3952f88d83c9fc481ae6ff/source/helpers/is-low-quality-comment.ts#L2-L3
+const unhelpfulRe =
+  /[\s,.!?👍👎👌🙏]+|[\u{1F3FB}-\u{1F3FF}]|[+-]\d+|⬆️|ditt?o|me|too|t?here|on|same|this|issues?|please|pl[sz]|any|updates?|bump|question|solution|following/giu
+function isUnhelpfulComment(text) {
+  return text.replace(unhelpfulRe, "") === ""
+}
+
+async function hideUnhelpfulComments() {
+  const { comment, action, issue } = context.payload
+  if (action !== "created" || !comment || !issue) return
+
+  const { node_id: subjectId, body } = comment
+
+  if (!isUnhelpfulComment(body) && !isStillHappeningWithoutLink(body)) return
+
+  debug(
+    `Comment (${body}) on issue #${issue.number} is unhelpful, minimizing...`
+  )
+  const { graphql } = getOctokit(config.token)
+  /** @see https://docs.github.com/en/graphql/reference/mutations#minimizecomment */
+  await graphql(
+    `
+      mutation minimize($subjectId: ID!) {
+        minimizeComment(
+          input: { subjectId: $subjectId, classifier: OFF_TOPIC }
+        ) {
+          minimizedComment {
+            isMinimized
+          }
+        }
+      }
+    `,
+    { subjectId }
+  )
+
+  const shortComment = body.length > 15 ? body.slice(0, 15) + "…" : body
+  info(`Comment (${shortComment}) on issue #${issue.number} was minimized.`)
+}
+
 async function run() {
   await checkValidReproduction()
   await commentOnLabel()
+  await hideUnhelpfulComments()
 }
+
+run().catch(setFailed)

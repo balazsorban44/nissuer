@@ -8,7 +8,7 @@ This action is meant to help maintainers of open source projects by automating s
 
 - Autoclose/comment/label/lock issues that do not have a valid reproduction URL
 - Autocomment on issues based on labels added by a maintainer
-- Hide +1, same issue, etc. comments on issues (TODO)
+- Hide "+1", "same issue", etc. comments on issues (based on [Refined GitHub](https://github.com/refined-github/refined-github/blob/c864a20b57bb433aaf3952f88d83c9fc481ae6ff/source/helpers/is-low-quality-comment.ts#L2-L3))
 - Autolabel issues based on user selection (TODO)
 
 ## Usage
@@ -21,6 +21,8 @@ name: Nissuer test
 on:
   issues:
     types: [opened]
+  issue_comment:
+    types: [created]
 
 permissions:
   issues: write
@@ -33,9 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Nissuer
-        uses: balazsorban44/nissuer@1.0.0
-        with:
-          label-comments: '{"invalid": ".github/invalid-reproduction.md"}'
+        uses: balazsorban44/nissuer@1.2.0
 ```
 
 Add a comment file (by default we look for `.github/invalid-reproduction.md`):

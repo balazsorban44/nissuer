@@ -3,6 +3,8 @@ name: Nissuer test
 on:
   issues:
     types: [opened, labeled]
+  issue_comment:
+    types: [created]
 
 permissions:
   issues: write
@@ -15,6 +17,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Nissuer
-        uses: balazsorban44/nissuer@1.1.2
-        with:
-          label-comments: '{"incomplete": ".github/invalid-reproduction.md"}'
+        uses: balazsorban44/nissuer@1.2.0
