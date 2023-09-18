@@ -19,22 +19,22 @@ function tryParse(json) {
 const config = {
   invalidLink: {
     comment:
-      getInput("reproduction-comment") || ".github/invalid-reproduction.md",
-    hosts: (getInput("reproduction-hosts") || "github.com")
+      getInput("reproduction_comment") || ".github/invalid-reproduction.md",
+    hosts: (getInput("reproduction_hosts") || "github.com")
       .split(",")
       .map((h) => h.trim()),
-    label: getInput("reproduction-invalid-label") || "invalid-reproduction",
+    label: getInput("reproduction_invalid_label") || "invalid-reproduction",
     linkSection:
-      getInput("reproduction-link-section") ||
+      getInput("reproduction_link_section") ||
       "### Link to reproduction(.*)### To reproduce",
   },
   labels: {
     comments: tryParse(
-      getInput("label-comments") ||
+      getInput("label_comments") ||
         '{"invalid reproduction": ".github/invalid-reproduction.md"}'
     ),
-    areaSection: getInput("label-area-section"),
-    areaPrefix: getInput("label-area-prefix") || "area:",
+    areaSection: getInput("label_area_section"),
+    areaPrefix: getInput("label_area_prefix") || "area:",
   },
   token: process.env.GITHUB_TOKEN,
   workspace: process.env.GITHUB_WORKSPACE,
