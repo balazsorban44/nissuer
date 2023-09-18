@@ -21,3 +21,11 @@ body:
         3. Y will happen
     validations:
       required: true
+  - type: dropdown
+    attributes:
+      label: Which area(s) are affected?
+      multiple: true
+      options:
+        - 'Test 1'
+        - 'Test 2'
+

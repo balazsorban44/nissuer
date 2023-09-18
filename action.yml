@@ -19,8 +19,13 @@ inputs:
     description: 'A regular expression string with "(.*)" matching a valid URL in the issue body. The result is trimmed. Example: "### Link to reproduction(.*)### To reproduce"'
     default: '### Link to reproduction(.*)### To reproduce'
   label-comments:
-    description: 'Autocomment on issues based on the added label. It should be a JSON object, where the key is a label, and the value is a file path or a comment text. Example: {"invalid reproduction": ".github/invalid-reproduction.md"}'
+    description: 'Autocomment on issues based on the added label. It should be a JSON object, where the k ey is a label, and the value is a file path or a comment text. Example: {"invalid reproduction": ".github/invalid-reproduction.md"}'
     default: '{"invalid reproduction": ".github/invalid-reproduction.md"}'
+  label-area-prefix:
+    description: 'Only look for these labels when autolabeling based on the user selection. Example: "area:"'
+    default: 'area:'
+  label-area-section:
+    description: 'A regular expression string with "(.*)" matching a section in the issue body to look for user selected areas. The result is trimmed. Example: "### Which area(s) are affected?(.*)### Additional context"'
 
 runs:
   using: "composite"

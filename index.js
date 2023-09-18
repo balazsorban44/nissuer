@@ -33,6 +33,8 @@ const config = {
       getInput("label-comments") ||
         '{"invalid reproduction": ".github/invalid-reproduction.md"}'
     ),
+    areaSection: getInput("label-area-section"),
+    areaPrefix: getInput("label-area-prefix") || "area:",
   },
   token: process.env.GITHUB_TOKEN,
   workspace: process.env.GITHUB_WORKSPACE,
@@ -223,7 +225,68 @@ async function hideUnhelpfulComments() {
   info(`Comment (${shortComment}) on issue #${issue.number} was minimized.`)
 }
 
+/* This action will automatically add labels to issues based on the area(s) of Next.js that are affected. */
+async function autolabelArea() {
+  if (!config.labels.areaSection)
+    return info("No area section defined, exiting")
+  const { issue } = context.payload
+  if (!issue) return info("Not an issue, exiting")
+
+  const { body, number: issue_number } = issue
+  if (!body) return info("Could not get issue body, exiting")
+
+  const { rest: client } = getOctokit(config.token)
+
+  const labelsToAdd = []
+
+  const areaSectionRe = new RegExp(config.labels.areaSection, "is")
+  const matchSection = body.match(areaSectionRe)?.[1]?.trim()
+
+  if (!matchSection)
+    return info(
+      `Issue #${issue_number} does not contain a match section, likely not a bug template, exiting`
+    )
+
+  debug(`Match section: ${matchSection}`)
+
+  const { data: labelData } = await client.issues.listLabelsForRepo({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    per_page: 100,
+  })
+
+  /** @type {Map<string, string>}*/
+  const labels = new Map()
+  // Only load labels that start with a prefix and have a description
+  for (const label of labelData)
+    if (label.name.startsWith(config.labels.areaPrefix) && label.description)
+      labels.set(label.name, label.description)
+
+  if (!labels.size)
+    return info(
+      `No labels with prefix (${config.labels.areaPrefix}) found, exiting`
+    )
+
+  debug(`Loaded labels: ${Array.from(labels.keys()).join(", ")}`)
+
+  for (const [label, description] of labels.entries())
+    if (matchSection.includes(description)) labelsToAdd.push(label)
+
+  debug(`Labels to add: ${labelsToAdd.join(", ")}`)
+
+  if (!labelsToAdd.length) return info("No labels to add, exiting")
+
+  const formatted = labelsToAdd.map((l) => `"${l}"`).join(", ")
+  debug(`Adding label(s) (${formatted}) to issue #${issue_number}`)
+
+  const common = { ...context.repo, issue_number: issue.number }
+  await client.issues.addLabels({ ...common, labels: labelsToAdd })
+
+  info(`Added labels to issue #${issue_number}: ${labelsToAdd.join(", ")}`)
+}
+
 async function run() {
+  await autolabelArea()
   await checkValidReproduction()
   await commentOnLabel()
   await hideUnhelpfulComments()
