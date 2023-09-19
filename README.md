@@ -50,4 +50,4 @@ Unfortunately, we can't help you without a reproduction URL.
 It was closed automatically, but feel free to reopen it once you have a reproduction URL.
 ```
 
-A good example of a comment is in the [Next.js repository](https://github.com/vercel/next.js/blob/canary/.github/actions/invalid-link.md).
+A good example of a comment is in the [Next.js repository](https://github.com/vercel/next.js/blob/canary/.github/invalid-link.md).
