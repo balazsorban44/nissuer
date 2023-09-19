@@ -240,9 +240,7 @@ async function autolabelArea() {
   const matchSection = body.match(areaSectionRe)?.[1]?.trim()
 
   if (!matchSection)
-    return info(
-      `Issue #${issue_number} does not contain a match section, likely not a bug template, exiting`
-    )
+    return info(`Issue #${issue_number} does not contain a match section`)
 
   debug(`Match section: ${matchSection}`)
 
@@ -260,9 +258,7 @@ async function autolabelArea() {
       labels.set(label.name, label.description)
 
   if (!labels.size)
-    return info(
-      `No labels with prefix (${config.labels.areaPrefix}) found, exiting`
-    )
+    return info(`No labels with prefix (${config.labels.areaPrefix}) found`)
 
   debug(`Loaded labels: ${Array.from(labels.keys()).join(", ")}`)
 
@@ -271,7 +267,7 @@ async function autolabelArea() {
 
   debug(`Labels to add: ${labelsToAdd.join(", ")}`)
 
-  if (!labelsToAdd.length) return info("No labels to add, exiting")
+  if (!labelsToAdd.length) return info("No labels to add")
 
   const formatted = labelsToAdd.map((l) => `"${l}"`).join(", ")
   debug(`Adding label(s) (${formatted}) to issue #${issue_number}`)
