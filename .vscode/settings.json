@@ -1,0 +1,9 @@
+{
+  "search.exclude": {
+    "dist": true,
+  },
+  "files.exclude": {
+    "dist": true,
+    ".vscode": true
+  }
+}

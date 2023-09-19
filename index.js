@@ -20,6 +20,9 @@ const config = {
   invalidLink: {
     comment:
       getInput("reproduction_comment") || ".github/invalid-reproduction.md",
+    bugLabels: getInput("reproduction_issue_labels")
+      .split(",")
+      .map((l) => l.trim()),
     hosts: (getInput("reproduction_hosts") || "github.com")
       .split(",")
       .map((h) => h.trim()),
@@ -46,6 +49,15 @@ async function checkValidReproduction() {
   const { issue, action } = context.payload
 
   if (action !== "opened" || !issue?.body) return
+
+  /** @type {string[]} */
+  const labels = issue.labels.map((l) => l.name)
+
+  if (
+    config.invalidLink.bugLabels.length &&
+    !labels.some((l) => config.invalidLink.bugLabels.includes(l))
+  )
+    return info("Not manually or already labeled")
 
   if (await isValidReproduction(issue.body))
     return info(`Issue #${issue.number} contains a valid reproduction 💚`)
