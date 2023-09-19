@@ -1,8 +1,8 @@
 # Nissuer
 
-A GitHub Action for tried and tired maintainers.
+> Make issues non-issues quicker
 
-This action is meant to help maintainers of open-source projects by automating some of the more tedious/repetitive tasks that come with the job. Make issues non-issues quicker by letting it handle unhelpful issues/comments.
+A GitHub Action for tried and tired maintainers. This action is meant to help maintainers of open-source projects by automating some of the more tedious/repetitive tasks that come with the job.
 
 ## Features
 
