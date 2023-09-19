@@ -1,4 +1,4 @@
-# Nissuer
+# nissuer
 
 > Make issues non-issues quicker
 
