@@ -39,6 +39,9 @@ const config = {
     areaSection: getInput("label_area_section"),
     areaPrefix: getInput("label_area_prefix") || "area:",
   },
+  comments: {
+    unhelpfulWeight: Number(getInput("comment_unhelpful_weight")) || 0.3,
+  },
   token: process.env.GITHUB_TOKEN,
   workspace: process.env.GITHUB_WORKSPACE,
 }
@@ -195,12 +198,18 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-// Borrowed from Refined GitHub:
+// Borrowed and tweaked from Refined GitHub:
 // https://github.com/refined-github/refined-github/blob/c864a20b57bb433aaf3952f88d83c9fc481ae6ff/source/helpers/is-low-quality-comment.ts#L2-L3
 const unhelpfulRe =
-  /[\s,.!?👍👎👌🙏]+|[\u{1F3FB}-\u{1F3FF}]|[+-]\d+|⬆️|ditt?o|me|too|t?here|on|same|this|issues?|please|pl[sz]|any|updates?|bump|question|solution|following/giu
+  /[\s,.!?👍👎👌🙏]+|[\u{1F3FB}-\u{1F3FF}]|[+-]\d+|⬆️|ditt?o|me|too|t?here|on|same|this|issues?|please|pl[sz]|any|updates?|bump|question|solution|following|problem|still|happen(ing|s)|the/giu
 function isUnhelpfulComment(text) {
-  return text.replace(unhelpfulRe, "") === ""
+  const restText = text.replace(unhelpfulRe, "")
+  debug(`Rest text: ${restText}`)
+  const textLength = text.replace(/\s/, "").length
+  debug(`Text length: ${textLength}`)
+  const UNHELPFUL_LIMIT = config.comments.unhelpfulWeight
+  // Since we use probabilities, this is considered AI. 🙃
+  return restText.length / textLength < UNHELPFUL_LIMIT
 }
 
 async function hideUnhelpfulComments() {

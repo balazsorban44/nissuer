@@ -6,6 +6,9 @@ branding:
   color: orange
 
 inputs:
+  comment-unhelpful-weight:
+    description: 'If an issue comment is below this rate, it will be marked as off-topic and gets hidden. Example: 0.3'
+    default: '0.3'
   reproduction-comment:
     description: 'Either a string or a path to a .md file inside the repository. Example: ".github/invalid-reproduction.md"'
     default: '.github/invalid-reproduction.md'
@@ -34,6 +37,7 @@ runs:
   using: "composite"
   steps:
     - name: Checkout code
+      if: ${{ github.event_name != 'pull_request' }}
       uses: actions/checkout@v4
     - name: Run action
       run: node ${{ github.action_path }}/dist/index.js
@@ -46,5 +50,6 @@ runs:
         "INPUT_REPRODUCTION_ISSUE_LABELS": ${{inputs.reproduction-issue-labels}}
         "INPUT_REPRODUCTION_LINK_SECTION": ${{inputs.reproduction-link-section}}
         "INPUT_LABEL_COMMENTS": ${{inputs.label-comments}}
+        "INPUT_COMMENT_UNHELPFUL_WEIGHT": ${{inputs.comment-unhelpful-weight}}
         "INPUT_LABEL_AREA_PREFIX": ${{inputs.label-area-prefix}}
         "INPUT_LABEL_AREA_SECTION": ${{inputs.label-area-section}}
