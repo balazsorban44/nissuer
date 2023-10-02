@@ -1,6 +1,13 @@
 // @ts-check
 
-import { info, debug, getInput, setFailed } from "@actions/core"
+import {
+  debug,
+  error,
+  getBooleanInput,
+  getInput,
+  info,
+  setFailed,
+} from "@actions/core"
 import { context, getOctokit } from "@actions/github"
 import { readFile, access } from "node:fs/promises"
 import { join } from "node:path"
@@ -41,6 +48,13 @@ const config = {
   },
   comments: {
     unhelpfulWeight: Number(getInput("comment_unhelpful_weight")) || 0.3,
+  },
+  webhook: {
+    url: getInput("webhook_url"),
+    secret: getInput("webhook_secret"),
+  },
+  vuln: {
+    shouldDelete: getBooleanInput("delete_vulnerability_report"),
   },
   token: process.env.GITHUB_TOKEN,
   workspace: process.env.GITHUB_WORKSPACE,
@@ -299,11 +313,74 @@ async function autolabelArea() {
   info(`Added labels to issue #${issue_number}: ${labelsToAdd.join(", ")}`)
 }
 
+/** Common words used in issues publicly disclosing potential vulnerabilities by accident. */
+const vulnRegex =
+  /\b(vulnerab(?:ility|ilities)|exploit(?:s|ed)?|attack(?:s|ed|er)?|security\s+issue(?:s)?|CVE-\d{4}-\d{4,7}|disclos(?:ure|ed|ing)?|advisory|denial\s+of\s+service|(?:d)?dos)\b/gi
+
+/**
+ * This action reads the title and body of a newly opened issue, matches a regex for certain words, and will invoke a webhook if it matches.
+ * Optionally, it can also delete the issue.
+ */
+async function notifyOnPubliclyDisclosedVulnerability() {
+  const { action, issue } = context.payload
+  if (action !== "opened" || !issue?.body) return
+  const { body, title, number: issue_number, user } = issue
+
+  if (!vulnRegex.test(`${title} ${body}`))
+    return debug("No public vulnerability disclosure detected")
+
+  info(`Public vulnerability disclosure detected in issue #${issue_number}`)
+
+  let deleted = false
+  if (config.vuln.shouldDelete) {
+    info(`Deleting issue #${issue_number}...`)
+    const { graphql } = getOctokit(config.token)
+    try {
+      await graphql(`
+        mutation {
+          deleteIssue(input: {issueId: "${issue_number}"}) {
+            clientMutationId
+          }
+        }`)
+      deleted = true
+      info(`Deleted issue #${issue_number}`)
+      debug(`Deleted issue #${issue_number}`)
+    } catch (error) {
+      error(`Couldn't delete issue #${issue_number}: ${e}`)
+    }
+  } else debug(`Not deleting issue #${issue_number}`)
+
+  try {
+    debug(`Invoking webhook...`)
+    const { repo } = context
+    const res = await fetch(config.webhook.url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "publicly_disclosed_vulnerability",
+        repository: `https://github.com/${repo.owner}/${repo.repo}`,
+        issue_number,
+        title,
+        body,
+        deleted,
+        user: `https://github.com/${user.login}`,
+        secret: config.webhook.secret,
+      }),
+    })
+
+    if (res.ok) return info(`Webhook invoked successfully`)
+    error(`Webhook returned an error, check your logs`)
+  } catch (error) {
+    error(`Error invoking webhook: ${error.message}`)
+  }
+}
+
 async function run() {
   await autolabelArea()
   await checkValidReproduction()
   await commentOnLabel()
   await hideUnhelpfulComments()
+  await notifyOnPubliclyDisclosedVulnerability()
 }
 
 run().catch(setFailed)

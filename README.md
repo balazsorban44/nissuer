@@ -10,6 +10,7 @@ A GitHub Action for tried and tired maintainers. This action is meant to help ma
 - Auto comment on issues based on labels added by a maintainer
 - Hide "+1", "same issue", etc. comments on issues (partially based on [Refined GitHub](https://github.com/refined-github/refined-github/blob/c864a20b57bb433aaf3952f88d83c9fc481ae6ff/source/helpers/is-low-quality-comment.ts#L2-L3))
 - Autolabel issues based on user selection
+- Notify on potential publicly disclosed vulnerabilities
 
 ## Usage
 

@@ -32,6 +32,15 @@ inputs:
     default: 'area:'
   label-area-section:
     description: 'A regular expression string with "(.*)" matching a section in the issue body to look for user selected areas. The result is trimmed. Example: "### Which area(s) are affected?(.*)### Additional context"'
+  webhook-url:
+    description: 'Webhook URL to send notifications to. Example: "https://example.com/api/webhooks/nissuer"'
+    default: ''
+  webhook-secret:
+    description: 'Secret to use for the webhook.'
+    default: ''
+  delete-vulnerability-report:
+    description: 'Delete the vulnerability report after sending it to the webhook. Example: "false"'
+    default: 'false'
 
 runs:
   using: "composite"
@@ -53,3 +62,6 @@ runs:
         "INPUT_COMMENT_UNHELPFUL_WEIGHT": ${{inputs.comment-unhelpful-weight}}
         "INPUT_LABEL_AREA_PREFIX": ${{inputs.label-area-prefix}}
         "INPUT_LABEL_AREA_SECTION": ${{inputs.label-area-section}}
+        "INPUT_WEBHOOK_URL": ${{inputs.webhook-url}}
+        "INPUT_WEBHOOK_SECRET": ${{inputs.webhook-secret}}
+        "INPUT_DELETE_VULNERABILITY_REPORT": ${{inputs.delete-vulnerability-report}}
