@@ -23,6 +23,13 @@ function tryParse(json) {
   }
 }
 
+/** @param {string} value */
+function getBooleanOrUndefined(value) {
+  const variable = process.env[`INPUT_${value.toUpperCase()}`]
+  if (variable === undefined || variable === "") return undefined
+  return getBooleanInput(value)
+}
+
 const config = {
   invalidLink: {
     comment:
@@ -48,13 +55,14 @@ const config = {
   },
   comments: {
     unhelpfulWeight: Number(getInput("comment_unhelpful_weight")) || 0.3,
+    addExplainer: getBooleanOrUndefined("comment_add_explainer") ?? true,
   },
   webhook: {
     url: getInput("webhook_url"),
     secret: getInput("webhook_secret"),
   },
   vuln: {
-    shouldDelete: getBooleanInput("delete_vulnerability_report"),
+    shouldDelete: getBooleanOrUndefined("delete_vulnerability_report"),
   },
   token: process.env.GITHUB_TOKEN,
   workspace: process.env.GITHUB_WORKSPACE,
@@ -226,6 +234,8 @@ function isUnhelpfulComment(text) {
   return restText.length / textLength < UNHELPFUL_LIMIT
 }
 
+const updatedComment = `_Edit by maintainers: Comment was **automatically** minimized because it was considered unhelpful. (If you think this was by mistake, let us know). Please only comment if it adds context to the issue. If you want to express that you have the same problem, use the upvote 👍 on the issue description or subscribe to the issue for updates. Thanks!_`
+
 async function hideUnhelpfulComments() {
   const { comment, action, issue } = context.payload
   if (action !== "created" || !comment || !issue) return
@@ -234,10 +244,21 @@ async function hideUnhelpfulComments() {
 
   if (!isUnhelpfulComment(body) && !isStillHappeningWithoutLink(body)) return
 
-  debug(
+  info(
     `Comment (${body}) on issue #${issue.number} is unhelpful, minimizing...`
   )
-  const { graphql } = getOctokit(config.token)
+  const { graphql, rest: client } = getOctokit(config.token)
+
+  if (config.comments.addExplainer) {
+    debug(`Adding explainer to comment #${subjectId}...`)
+    await client.issues.updateComment({
+      ...context.repo,
+      comment_id: subjectId,
+      body: `${body}\n\n${updatedComment}`,
+    })
+    info(`Explainer added to comment #${subjectId}`)
+  }
+
   /** @see https://docs.github.com/en/graphql/reference/mutations#minimizecomment */
   await graphql(
     `
@@ -346,7 +367,7 @@ async function notifyOnPubliclyDisclosedVulnerability() {
       info(`Deleted issue #${issue_number}`)
       debug(`Deleted issue #${issue_number}`)
     } catch (error) {
-      error(`Couldn't delete issue #${issue_number}: ${e}`)
+      error(`Couldn't delete issue #${issue_number}: ${error}`)
     }
   } else debug(`Not deleting issue #${issue_number}`)
 
