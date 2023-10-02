@@ -347,6 +347,9 @@ async function notifyOnPubliclyDisclosedVulnerability() {
   if (action !== "opened" || !issue?.body) return
   const { body, title, number: issue_number, user } = issue
 
+  if (!config.webhook.url || !config.webhook.secret)
+    return debug("No webhook URL or secret defined")
+
   if (!vulnRegex.test(`${title} ${body}`))
     return debug("No public vulnerability disclosure detected")
 
