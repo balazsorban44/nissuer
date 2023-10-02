@@ -240,7 +240,7 @@ async function hideUnhelpfulComments() {
   const { comment, action, issue } = context.payload
   if (action !== "created" || !comment || !issue) return
 
-  const { node_id: subjectId, body } = comment
+  const { node_id: subjectId, body, id: comment_id } = comment
 
   if (!isUnhelpfulComment(body) && !isStillHappeningWithoutLink(body)) return
 
@@ -250,13 +250,13 @@ async function hideUnhelpfulComments() {
   const { graphql, rest: client } = getOctokit(config.token)
 
   if (config.comments.addExplainer) {
-    debug(`Adding explainer to comment #${subjectId}...`)
+    debug(`Adding explainer to comment ${comment_id}...`)
     await client.issues.updateComment({
       ...context.repo,
-      comment_id: subjectId,
+      comment_id,
       body: `${body}\n\n${updatedComment}`,
     })
-    info(`Explainer added to comment #${subjectId}`)
+    info(`Explainer added to comment ${comment_id}`)
   }
 
   /** @see https://docs.github.com/en/graphql/reference/mutations#minimizecomment */
