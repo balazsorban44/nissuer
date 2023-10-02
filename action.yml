@@ -56,7 +56,7 @@ runs:
       shell: sh
       # https://github.com/actions/runner/issues/665#issuecomment-676581170
       env:
-        "INPUT_COMMENT_ADD_EXPLAINER": ${{comment-add-explainer}}
+        "INPUT_COMMENT_ADD_EXPLAINER": ${{inputs.comment-add-explainer}}
         "INPUT_COMMENT_UNHELPFUL_WEIGHT": ${{inputs.comment-unhelpful-weight}}
         "INPUT_DELETE_VULNERABILITY_REPORT": ${{inputs.delete-vulnerability-report}}
         "INPUT_LABEL_AREA_PREFIX": ${{inputs.label-area-prefix}}
