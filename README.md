@@ -35,26 +35,25 @@ nissuer comes with a default configuration, but you can override certain behavio
 - nissuer can label issues based on the content of an issue. Add a select input, and nissuer will add a label based on the selection.
 - nissuer can comment on issues based on labels on behalf of a maintainer. Avoid having to repeat yourself by writing up a comment for common cases
 
-
 | Input                | Description                                                                                                                                                                         | Default Value                                                 |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
 | `label-comments`     | Autocomment on issues based on the added label. It should be a JSON object, where the key is a label, and the value is a file path or a comment text.                               | `{"invalid reproduction": ".github/invalid-reproduction.md"}` |
 | `label-area-prefix`  | Only look for these labels when autolabeling based on the user selection.                                                                                                           | `area:`                                                       |
 | `label-area-section` | A regular expression string with "(.\*)" matching a section in the issue body to look for user-selected areas. The result is trimmed. Labeling is skipped if this is not configured |                                                               |
 
-
 ### Notify about public security disclosures
 
 - nissuer can detect if an issue about a potential vulnerability might have been opened publicly by accident and notify the maintainer about it.
 - nissuer can also delete the issue automatically and send you all the details via a webhook. This can help avoid staying up late at night to fix a vulnerability that was not disclosed responsibly.
 
-| Input                         | Description                                                      | Default Value |
-| ----------------------------- | ---------------------------------------------------------------- | ------------- |
-| `webhook-url`                 | Webhook URL to send notifications to.                            |               |
-| `webhook-secret`              | Secret to use for the webhook.                                   |               |
-| `delete-vulnerability-report` | Delete the vulnerability report after sending it to the webhook. | `false`       |
+| Input                         | Description                                                                                 | Default Value |
+| ----------------------------- | ------------------------------------------------------------------------------------------- | ------------- |
+| `webhook-url`                 | Webhook URL to send notifications to.                                                       |               |
+| `webhook-secret`              | Secret to use for the webhook. It will be part of the JSON body of the request as `secret`. |               |
+| `delete-vulnerability-report` | Delete the vulnerability report after sending it to the webhook.                            | `false`       |
 
 ## Usage
+
 Here is a minimal setup of nissuer. Add a workflow (eg. `.github/workflows/nissuer.yml`):
 
 ```.github/workflows/nissuer.yml
