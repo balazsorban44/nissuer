@@ -57,7 +57,7 @@ nissuer comes with a default configuration, but you can override certain behavio
 Here is a minimal setup of nissuer. Add a workflow (eg. `.github/workflows/nissuer.yml`):
 
 ```.github/workflows/nissuer.yml
-name: Nissuer test
+name: Triage via nissuer
 
 on:
   issues:
