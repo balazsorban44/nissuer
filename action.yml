@@ -6,6 +6,9 @@ branding:
   color: orange
 
 inputs:
+  comment-add-explainer:
+    description: 'Add an explainer to a comment that was marked as off-topic. Example: "true"'
+    default: 'true'
   comment-unhelpful-weight:
     description: 'If an issue comment is below this rate, it will be marked as off-topic and gets hidden. Example: 0.3'
     default: '0.3'
@@ -53,15 +56,16 @@ runs:
       shell: sh
       # https://github.com/actions/runner/issues/665#issuecomment-676581170
       env:
+        "INPUT_COMMENT_ADD_EXPLAINER": ${{comment-add-explainer}}
+        "INPUT_COMMENT_UNHELPFUL_WEIGHT": ${{inputs.comment-unhelpful-weight}}
+        "INPUT_DELETE_VULNERABILITY_REPORT": ${{inputs.delete-vulnerability-report}}
+        "INPUT_LABEL_AREA_PREFIX": ${{inputs.label-area-prefix}}
+        "INPUT_LABEL_AREA_SECTION": ${{inputs.label-area-section}}
+        "INPUT_LABEL_COMMENTS": ${{inputs.label-comments}}
         "INPUT_REPRODUCTION_COMMENT": ${{inputs.reproduction-comment}}
         "INPUT_REPRODUCTION_HOSTS": ${{inputs.reproduction-hosts}}
         "INPUT_REPRODUCTION_INVALID_LABEL": ${{inputs.reproduction-invalid-label}}
         "INPUT_REPRODUCTION_ISSUE_LABELS": ${{inputs.reproduction-issue-labels}}
         "INPUT_REPRODUCTION_LINK_SECTION": ${{inputs.reproduction-link-section}}
-        "INPUT_LABEL_COMMENTS": ${{inputs.label-comments}}
-        "INPUT_COMMENT_UNHELPFUL_WEIGHT": ${{inputs.comment-unhelpful-weight}}
-        "INPUT_LABEL_AREA_PREFIX": ${{inputs.label-area-prefix}}
-        "INPUT_LABEL_AREA_SECTION": ${{inputs.label-area-section}}
-        "INPUT_WEBHOOK_URL": ${{inputs.webhook-url}}
         "INPUT_WEBHOOK_SECRET": ${{inputs.webhook-secret}}
-        "INPUT_DELETE_VULNERABILITY_REPORT": ${{inputs.delete-vulnerability-report}}
+        "INPUT_WEBHOOK_URL": ${{inputs.webhook-url}}
