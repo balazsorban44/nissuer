@@ -18,6 +18,9 @@ inputs:
   reproduction-hosts:
     description: 'Comma-separated list of hostnames that are allowed for reproductions. Example: "github.com,codesandbox.io"'
     default: github.com
+  reproduction-blocklist:
+    description: 'Comma-separated list of URLs that are not allowed for reproductions. They can be regular expression string. Example: "github.com/.*/fork-of-example"'
+    default: ''
   reproduction-invalid-label:
     description: 'Label to apply to issues without a valid reproduction. Example: "invalid-reproduction"'
     default: 'invalid-reproduction'
@@ -64,6 +67,7 @@ runs:
         "INPUT_LABEL_COMMENTS": ${{inputs.label-comments}}
         "INPUT_REPRODUCTION_COMMENT": ${{inputs.reproduction-comment}}
         "INPUT_REPRODUCTION_HOSTS": ${{inputs.reproduction-hosts}}
+        "INPUT_REPRODUCTION_BLOCKLIST": ${{inputs.reproduction-blocklist}}
         "INPUT_REPRODUCTION_INVALID_LABEL": ${{inputs.reproduction-invalid-label}}
         "INPUT_REPRODUCTION_ISSUE_LABELS": ${{inputs.reproduction-issue-labels}}
         "INPUT_REPRODUCTION_LINK_SECTION": ${{inputs.reproduction-link-section}}

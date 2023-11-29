@@ -40,6 +40,9 @@ const config = {
     hosts: (getInput("reproduction_hosts") || "github.com")
       .split(",")
       .map((h) => h.trim()),
+    blocklist: (getInput("reproduction_blocklist") || "")
+      .split(",")
+      .map((h) => new RegExp(h.trim())),
     label: getInput("reproduction_invalid_label") || "invalid-reproduction",
     linkSection:
       getInput("reproduction_link_section") ||
@@ -121,7 +124,9 @@ async function checkValidReproduction() {
 }
 
 /**
- * Determine if an issue contains a valid/accessible link to a reproduction
+ * Determine if an issue contains a valid/accessible link to a reproduction.
+ *
+ * Returns `true` if the link is valid.
  * @param {string} body
  */
 async function isValidReproduction(body) {
@@ -139,6 +144,9 @@ async function isValidReproduction(body) {
   const url = new URL(link)
   if (!config.invalidLink.hosts.includes(url.hostname))
     return info("Link did not match allowed reproduction hosts")
+
+  if (config.invalidLink.blocklist.some((r) => r.test(link)))
+    return info("Link matched blocklist for reproduction URLs")
 
   try {
     // Verify that the link can be opened
