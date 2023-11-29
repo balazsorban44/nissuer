@@ -248,7 +248,17 @@ async function hideUnhelpfulComments() {
   const { comment, action, issue } = context.payload
   if (action !== "created" || !comment || !issue) return
 
-  const { node_id: subjectId, body, id: comment_id } = comment
+  const {
+    node_id: subjectId,
+    body,
+    id: comment_id,
+    author_association,
+  } = comment
+
+  // https://docs.github.com/en/webhooks/webhook-events-and-payloads#issue_comment
+  // https://docs.github.com/en/graphql/reference/enums#commentauthorassociation
+  if (author_association === "MEMBER")
+    return debug("Comment was made by an organization owner, skipping...")
 
   if (!isUnhelpfulComment(body) && !isStillHappeningWithoutLink(body)) return
 
