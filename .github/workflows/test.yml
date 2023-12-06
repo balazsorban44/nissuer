@@ -2,9 +2,9 @@ name: Nissuer test
 
 on:
   issues:
-    types: [opened, labeled]
+    types: [opened, labeled, edited]
   issue_comment:
-    types: [created, edited]
+    types: [created]
 
 permissions:
   issues: write
