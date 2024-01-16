@@ -242,7 +242,7 @@ function isUnhelpfulComment(text) {
   return restText.length / textLength < UNHELPFUL_LIMIT
 }
 
-const updatedComment = `_Edit by maintainers: Comment was **automatically** minimized because it was considered unhelpful. (If you think this was by mistake, let us know). Please only comment if it adds context to the issue. If you want to express that you have the same problem, use the upvote 👍 on the issue description or subscribe to the issue for updates. Thanks!_`
+const updatedComment = `_Edit by maintainer bot: Comment was **automatically** minimized because it was considered unhelpful. (If you think this was by mistake, let us know). Please only comment if it adds context to the issue. If you want to express that you have the same problem, use the upvote 👍 on the issue description or subscribe to the issue for updates. Thanks!_`
 
 async function hideUnhelpfulComments() {
   const { comment, action, issue } = context.payload
