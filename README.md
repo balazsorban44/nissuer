@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Nissuer
-        uses: balazsorban44/nissuer@1.9.1
+        uses: balazsorban44/nissuer@1.9.2
 ```
 
 Add a comment file (by default we look for `.github/invalid-reproduction.md`):

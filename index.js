@@ -88,7 +88,7 @@ async function checkValidReproduction() {
     config.invalidLink.bugLabels.length &&
     !labels.some((l) => config.invalidLink.bugLabels.includes(l))
 
-  if (!issueWithoutLabel || issueMatchingLabel)
+  if (!issueWithoutLabel && issueMatchingLabel)
     return info("Not manually or already labeled")
 
   if (await isValidReproduction(issue.body))
