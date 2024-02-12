@@ -20,3 +20,4 @@ jobs:
         uses: balazsorban44/nissuer@1.8.2
         with:
           label-area-section: 'Which area\(s\) are affected\?(.*)'
+          reproduction-issue-labels: 'bug,'
