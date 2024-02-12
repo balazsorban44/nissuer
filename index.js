@@ -82,8 +82,9 @@ async function checkValidReproduction() {
   const labels = issue.labels.map((l) => l.name)
 
   if (
-    config.invalidLink.bugLabels.length &&
-    !labels.some((l) => config.invalidLink.bugLabels.includes(l))
+    (!labels.length && config.invalidLink.bugLabels.includes("")) ||
+    (config.invalidLink.bugLabels.length &&
+      !labels.some((l) => config.invalidLink.bugLabels.includes(l)))
   )
     return info("Not manually or already labeled")
 

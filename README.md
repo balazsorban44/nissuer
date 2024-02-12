@@ -23,14 +23,14 @@ nissuer comes with a default configuration, but you can override certain behavio
 - nissuer can close/comment/label/lock issues that do not have a valid reproduction URL
 - nissuer validates the returned status code of a reproduction URL (for example a private GitHub repository will not be considered valid)
 
-| Input                        | Description                                                                                                                                 | Default Value                                  |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| `reproduction-comment`       | Either a string or a path to a .md file inside the repository.                                                                              | `.github/invalid-reproduction.md`              |
-| `reproduction-hosts`         | Comma-separated list of hostnames allowed for reproductions.                                                                                | `github.com`                                   |
-| `reproduction-blocklist`     | Comma-separated list of regular expression string that are not allowed for reproductions. (Eg.: "github.com/.\*/fork-of-non-reproduction"') |                                                |
-| `reproduction-invalid-label` | Label to apply to issues without a valid reproduction.                                                                                      | `invalid-reproduction`                         |
-| `reproduction-issue-labels`  | Comma-separated list of issue labels. If configured, only verify reproduction URLs of issues with one of these labels present.              |                                                |
-| `reproduction-link-section`  | A regular expression string with "(.\*)" matching a valid URL in the issue body. The result is trimmed.                                     | `### Link to reproduction(.*)### To reproduce` |
+| Input                        | Description                                                                                                                                                                                          | Default Value                                  |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| `reproduction-comment`       | Either a string or a path to a .md file inside the repository.                                                                                                                                       | `.github/invalid-reproduction.md`              |
+| `reproduction-hosts`         | Comma-separated list of hostnames allowed for reproductions.                                                                                                                                         | `github.com`                                   |
+| `reproduction-blocklist`     | Comma-separated list of regular expression string that are not allowed for reproductions. (Eg.: "github.com/.\*/fork-of-non-reproduction"')                                                          |                                                |
+| `reproduction-invalid-label` | Label to apply to issues without a valid reproduction.                                                                                                                                               | `invalid-reproduction`                         |
+| `reproduction-issue-labels`  | Comma-separated list of issue labels. If configured, only verify reproduction URLs of issues with one of these labels present. A comma at the end will handle issues without any label as non-valid. |                                                |
+| `reproduction-link-section`  | A regular expression string with "(.\*)" matching a valid URL in the issue body. The result is trimmed.                                                                                              | `### Link to reproduction(.*)### To reproduce` |
 
 ### Label Management
 
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Nissuer
-        uses: balazsorban44/nissuer@1.8.2
+        uses: balazsorban44/nissuer@1.9.0
 ```
 
 Add a comment file (by default we look for `.github/invalid-reproduction.md`):

@@ -25,7 +25,7 @@ inputs:
     description: 'Label to apply to issues without a valid reproduction. Example: "invalid-reproduction"'
     default: 'invalid-reproduction'
   reproduction-issue-labels:
-    description: 'Comma-separated list of issue labels. If configured, only verify reproduction URLs of issues with one of these labels present. Example: "bug"'
+    description: 'Comma-separated list of issue labels. If configured, only verify reproduction URLs of issues with one of these labels present. Adding a comma at the end will handle non-labeled issues as invalid. Example: "bug,", will consider issues with the label "bug" or no label.'
     default: ''
   reproduction-link-section:
     description: 'A regular expression string with "(.*)" matching a valid URL in the issue body. The result is trimmed. Example: "### Link to reproduction(.*)### To reproduce"'
