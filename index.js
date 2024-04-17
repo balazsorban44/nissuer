@@ -54,7 +54,7 @@ const config = {
         '{"invalid reproduction": ".github/invalid-reproduction.md"}'
     ),
     areaSection: getInput("label_area_section"),
-    areaPrefix: getInput("label_area_prefix") || "area:",
+    areaPrefix: getInput("label_area_prefix") ?? "area:",
   },
   comments: {
     unhelpfulWeight: Number(getInput("comment_unhelpful_weight")) || 0.3,
@@ -154,8 +154,8 @@ async function isValidReproduction(body) {
 
   try {
     // Verify that the link can be opened
+    const { status } = await fetch(getFetchLink(link))
     // We allow 500, in case it's a downtime
-    const { status } = await fetch(link)
     const ok = status < 400 || status >= 500
     if (!ok) info(`Link returned status ${status}`)
     return ok
@@ -163,6 +163,17 @@ async function isValidReproduction(body) {
     info(`Link fetching errored: ${e.message}`)
     return false
   }
+}
+
+/**
+ * HACK: Codesandbox devboxes currently always return a 200 status code, even if the sandbox is not found.
+ * We need to use the API to verify if the sandbox exists.
+ * @param {string} link
+ */
+function getFetchLink(link) {
+  if (link.startsWith("https://codesandbox.com"))
+    return link.replace("/p/devbox/", "/api/v1/sandboxes/")
+  return link
 }
 
 /**
