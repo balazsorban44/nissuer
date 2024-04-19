@@ -30,6 +30,15 @@ function getBooleanOrUndefined(value) {
   return getBooleanInput(value)
 }
 
+/**
+ * @param {string | undefined} value
+ * @returns {"name" | "description"}
+ */
+function getLabelMatch(value) {
+  if (value === "name") return value
+  return "description"
+}
+
 const config = {
   invalidLink: {
     comment:
@@ -54,6 +63,7 @@ const config = {
         '{"invalid reproduction": ".github/invalid-reproduction.md"}'
     ),
     areaSection: getInput("label_area_section"),
+    areaMatch: getLabelMatch(getInput("label_area_match")),
     areaPrefix: getInput("label_area_prefix") ?? "area:",
   },
   comments: {
@@ -143,6 +153,8 @@ async function isValidReproduction(body) {
     return
   }
 
+  debug(`Checking validity of link: ${link}`)
+
   if (!URL.canParse(link)) return info(`Invalid URL: ${link}`)
 
   const url = new URL(link)
@@ -157,6 +169,7 @@ async function isValidReproduction(body) {
     const { status } = await fetch(getFetchLink(link))
     // We allow 500, in case it's a downtime
     const ok = status < 400 || status >= 500
+    debug(`Link status: ${status}`)
     if (!ok) info(`Link returned status ${status}`)
     return ok
   } catch (e) {
@@ -312,7 +325,7 @@ async function hideUnhelpfulComments() {
   info(`Comment (${shortComment}) on issue #${issue.number} was minimized.`)
 }
 
-/* This action will automatically add labels to issues based on the area(s) of Next.js that are affected. */
+/* This action will automatically add labels to issues based on the area(s) of the code that are affected. */
 async function autolabelArea() {
   const { action, issue } = context.payload
   if (action !== "opened" || !issue?.body) return
@@ -341,18 +354,21 @@ async function autolabelArea() {
 
   /** @type {Map<string, string>}*/
   const labels = new Map()
-  // Only load labels that start with a prefix and have a description
-  for (const label of labelData)
-    if (label.name.startsWith(config.labels.areaPrefix) && label.description)
+  for (const label of labelData) {
+    if (!label.name.startsWith(config.labels.areaPrefix)) continue
+    if (config.labels.areaMatch === "description" && label.description) {
       labels.set(label.name, label.description)
+    } else if (config.labels.areaMatch === "name") {
+      labels.set(label.name, label.name)
+    }
+  }
 
-  if (!labels.size)
-    return info(`No labels with prefix (${config.labels.areaPrefix}) found`)
+  if (!labels.size) return info("No labels to match was found")
 
   debug(`Loaded labels: ${Array.from(labels.keys()).join(", ")}`)
 
-  for (const [label, description] of labels.entries())
-    if (matchSection.includes(description)) labelsToAdd.push(label)
+  for (const [label, criteria] of labels.entries())
+    if (matchSection.includes(criteria)) labelsToAdd.push(label)
 
   debug(`Labels to add: ${labelsToAdd.join(", ")}`)
 

@@ -38,6 +38,9 @@ inputs:
     default: 'area:'
   label-area-section:
     description: 'A regular expression string with "(.*)" matching a section in the issue body to look for user selected areas. The result is trimmed. Example: "### Which area(s) are affected?(.*)### Additional context"'
+  label-area-match:
+    description: 'When autolabeling based on the user selection, look for the label names or description. Example: "name"'
+    default: 'description'
   webhook-url:
     description: 'Webhook URL to send notifications to. Example: "https://example.com/api/webhooks/nissuer"'
     default: ''
@@ -63,6 +66,7 @@ runs:
         "INPUT_COMMENT_UNHELPFUL_WEIGHT": ${{inputs.comment-unhelpful-weight}}
         "INPUT_DELETE_VULNERABILITY_REPORT": ${{inputs.delete-vulnerability-report}}
         "INPUT_LABEL_AREA_PREFIX": ${{inputs.label-area-prefix}}
+        "INPUT_LABEL_AREA_MATCH": ${{inputs.label-area-match}}
         "INPUT_LABEL_AREA_SECTION": ${{inputs.label-area-section}}
         "INPUT_LABEL_COMMENTS": ${{inputs.label-comments}}
         "INPUT_REPRODUCTION_COMMENT": ${{inputs.reproduction-comment}}
