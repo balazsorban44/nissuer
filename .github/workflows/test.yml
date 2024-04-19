@@ -21,3 +21,5 @@ jobs:
         with:
           label-area-section: 'Which area\(s\) are affected\?(.*)'
           reproduction-issue-labels: "bug,"
+          label-area-match: "name"
+          label-area-prefix: ""
