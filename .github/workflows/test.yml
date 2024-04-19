@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Nissuer
-        uses: balazsorban44/nissuer@1.9.2
+        uses: balazsorban44/nissuer@1.10.0
         with:
           label-area-section: 'Which area\(s\) are affected\?(.*)'
           reproduction-issue-labels: "bug,"
