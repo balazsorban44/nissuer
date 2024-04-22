@@ -1,6 +1,6 @@
 # nissuer
 
-> Make issues non-issues quicker
+> Turn issues into non-issues quicker
 
 A GitHub Action for tried and tired maintainers. This action is meant to help maintainers of open-source projects by automating some of the more tedious/repetitive tasks that come with the job.
 
