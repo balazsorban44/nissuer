@@ -69,6 +69,9 @@ const config = {
   comments: {
     unhelpfulWeight: Number(getInput("comment_unhelpful_weight")) || 0.3,
     addExplainer: getBooleanOrUndefined("comment_add_explainer") ?? true,
+    ignoreLabels: getInput("comment_unhelpful_ignore_labels")
+      .split(",")
+      .map((l) => l.trim()),
   },
   webhook: {
     url: getInput("webhook_url"),
@@ -275,6 +278,10 @@ const updatedComment = `_Edit by maintainer bot: Comment was **automatically** m
 async function hideUnhelpfulComments() {
   const { comment, action, issue } = context.payload
   if (action !== "created" || !comment || !issue) return
+
+  // if the issue has any of labels given from comment-unhelpful-ignore-labels, then skip hiding the comment
+  const issueLabels = issue.labels.map((label) => label.name)
+  if (issueLabels.some((label) => config.comments.ignoreLabels.includes(label))) return
 
   const {
     node_id: subjectId,
