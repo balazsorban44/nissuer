@@ -12,11 +12,13 @@ nissuer comes with a default configuration, but you can override certain behavio
 
 - nissuer can hide "+1", "same issue", etc. comments on issues (partially based on [Refined GitHub](https://github.com/refined-github/refined-github/blob/c864a20b57bb433aaf3952f88d83c9fc481ae6ff/source/helpers/is-low-quality-comment.ts#L2-L3)). It won't hide comments from the repo organization members.
 - nissuer can also update the hidden comment with a note from the maintainers, explaining to the user why the comment was hidden. This is used for education purposes, so hopefully the user will be more considerate in the future.
+- nissuer can skip the "marking as off-topic and hidden" if certain a label(s) are present on the issue.
 
-| Input                      | Description                                                                        | Default Value |
-| -------------------------- | ---------------------------------------------------------------------------------- | ------------- |
-| `comment-add-explainer`    | Add an explainer to a comment that was marked as off-topic.                        | `true`        |
-| `comment-unhelpful-weight` | If an issue comment is below this rate, it will be marked as off-topic and hidden. | `0.3`         |
+| Input                             | Description                                                                                | Default Value |
+| --------------------------------- | ------------------------------------------------------------------------------------------ | ------------- |
+| `comment-add-explainer`           | Add an explainer to a comment that was marked as off-topic.                                | `true`        |
+| `comment-unhelpful-weight`        | If an issue comment is below this rate, it will be marked as off-topic and hidden.         | `0.3`         |
+| 'comment-unhelpful-ignore-labels` | Comma-separated list of labels that will prevent a comment from being marked as off-topic. |               |
 
 ### Validate reproduction URLs
 
